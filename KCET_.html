@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KCET — Academia–Industry Collaboration Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241B3A;
+    --ink-soft:#4A3A73;
+    --marigold:#7C3AED;
+    --marigold-deep:#6D28D9;
+    --teal:#2F6F65;
+    --paper:#EAF2FB;
+    --paper-raised:#F6FAFE;
+    --line:#CFE0F3;
+    --slate:#5B5468;
+    --slate-light:#8F87A0;
+    --danger:#B3452F;
+    --glass:rgba(255,255,255,0.5);
+    --glass-strong:rgba(255,255,255,0.72);
+    --glass-border:rgba(255,255,255,0.65);
+    --glass-blur:blur(18px);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:#F4F6F8; color:var(--ink); font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased; min-height:100vh; position:relative; overflow-x:hidden;
+  }
+  body::before, body::after{
+    content:''; position:fixed; border-radius:50%; filter:blur(90px); z-index:0; pointer-events:none;
+  }
+  body::before{ display:none; }
+  body::after{ width:420px; height:420px; background:var(--marigold); opacity:0.22; bottom:-140px; right:-100px; }
+  #app{ position:relative; z-index:1; }
+  .serif{ font-family:'Fraunces', serif; }
+  h1,h2,h3{ font-family:'Fraunces', serif; margin:0; font-weight:600; letter-spacing:-0.01em; }
+  a{ color:inherit; } button{ font-family:inherit; cursor:pointer; }
+  ::selection{ background:var(--marigold); color:var(--ink); }
+
+  #app{ min-height:100vh; display:flex; flex-direction:column; }
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    padding:16px 32px; background:linear-gradient(135deg, rgba(36,27,58,0.88) 0%, rgba(74,58,115,0.88) 140%);
+    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    color:#fff; border-bottom:1px solid rgba(255,255,255,0.15); box-shadow:0 4px 24px rgba(31,20,58,0.15);
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{ width:34px; height:34px; flex-shrink:0; }
+  .brand-mark svg{ width:100%; height:100%; display:block; }
+  .brand-text{ font-family:'Fraunces', serif; font-size:22px; font-weight:600; }
+  .brand-sub{ font-size:11.5px; color:#D8CFEF; margin-top:-2px; }
+
+  .role-switch{
+    display:flex; gap:2px; background:rgba(255,255,255,0.10); padding:4px; border-radius:999px; flex-wrap:wrap;
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.16);
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.12), inset 0 -1px 2px rgba(0,0,0,0.15);
+  }
+  .role-btn{
+    border:none; background:transparent; color:#D8CFEF; padding:8px 16px; border-radius:999px;
+    font-size:13.5px; font-weight:500; transition:background .2s ease, color .2s ease, transform .12s ease;
+  }
+  .role-btn.active{
+    background:linear-gradient(135deg, var(--marigold) 0%, #B07AF0 100%);
+    color:var(--ink); font-weight:600;
+    box-shadow:0 3px 12px rgba(124,58,237,0.4), inset 0 1px 1px rgba(255,255,255,0.5);
+    animation:liquidMorph .45s cubic-bezier(.34,1.56,.64,1);
+  }
+  .role-btn:not(.active):hover{ background:rgba(255,255,255,0.12); color:#fff; }
+  .role-btn:active{ transform:scale(0.94); }
+
+  main{ flex:1; width:100%; } .wrap{ max-width:1160px; margin:0 auto; padding:32px 32px 80px; animation:fadeSlideUp .32s cubic-bezier(.22,1,.36,1) both; }
+
+  .bridge-hero{
+    display:grid; grid-template-columns:1fr auto 1fr; align-items:stretch;
+    margin-bottom:40px; border:1px solid var(--glass-border); background:var(--glass);
+    backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+    border-radius:24px; overflow:hidden; transition:box-shadow .2s ease;
+    box-shadow:0 8px 32px rgba(31,38,135,0.08);
+  }
+  .bridge-hero:hover{ box-shadow:0 12px 40px rgba(31,38,135,0.14); }
+  .bridge-side{ padding:36px 34px; }
+  .bridge-side .eyebrow{ font-size:13px; color:var(--slate); margin-bottom:10px; }
+  .bridge-side h2{ font-size:26px; line-height:1.16; margin-bottom:12px; }
+  .bridge-side p{ color:var(--slate); font-size:14.5px; line-height:1.6; max-width:36ch; }
+  .bridge-mid{ width:1px; background:rgba(207,224,243,0.6); position:relative; }
+  .bridge-mid::after{
+    content:''; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg, var(--marigold), #B07AF0);
+    border:6px solid var(--glass-strong); box-shadow:0 4px 16px rgba(124,58,237,0.35);
+    animation:pulseGlow 2.6s ease-in-out infinite;
+  }
+  .bridge-stats{ display:flex; border-top:1px solid rgba(207,224,243,0.5); grid-column:1 / -1; flex-wrap:wrap; }
+  .bstat{ flex:1; min-width:150px; padding:20px 30px; border-right:1px solid rgba(207,224,243,0.5); transition:background .15s ease; }
+  .bstat:hover{ background:rgba(255,255,255,0.35); }
+  .bstat:last-child{ border-right:none; }
+  .bstat .num{ font-family:'Fraunces', serif; font-size:30px; font-weight:600; }
+  .bstat .lbl{ font-size:12.5px; color:var(--slate); margin-top:2px; }
+  .bstat.marigold .num{ color:var(--marigold-deep); } .bstat.teal .num{ color:var(--teal); }
+
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px; gap:16px; flex-wrap:wrap; }
+  .section-head h2{ font-size:21px; } .section-head .hint{ font-size:13px; color:var(--slate-light); }
+
+  .panel{
+    background:var(--glass); backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+    border:1px solid var(--glass-border); border-radius:20px; padding:24px; margin-bottom:20px;
+    box-shadow:0 8px 32px rgba(31,38,135,0.07); transition:box-shadow .2s ease, transform .2s ease;
+  }
+  .panel:hover{ box-shadow:0 12px 40px rgba(31,38,135,0.13); }
+  .row-list{ border-top:1px solid rgba(207,224,243,0.6); }
+  .row-item{
+    display:flex; gap:20px; align-items:flex-start; padding:20px 8px; border-bottom:1px solid rgba(207,224,243,0.5);
+    border-left:3px solid transparent; border-radius:12px; transition:border-color .15s, background .15s, transform .15s ease;
+  }
+  .row-item:hover{ background:rgba(255,255,255,0.45); transform:translateX(3px); }
+  .row-item.matched{ border-left-color:var(--teal); } .row-item.applied{ border-left-color:var(--marigold); }
+  .row-main{ flex:1; min-width:0; } .row-main h3{ font-size:16.5px; margin-bottom:4px; }
+  .row-meta{ font-size:12.5px; color:var(--slate); display:flex; gap:12px; flex-wrap:wrap; margin-bottom:9px; }
+  .row-side{ text-align:right; flex-shrink:0; min-width:120px; }
+
+  .type-pill{ font-size:11px; font-weight:600; padding:3px 9px; border-radius:6px; background:rgba(36,27,58,0.85); backdrop-filter:blur(4px); color:#fff; letter-spacing:0.02em; }
+
+  .tags{ display:flex; flex-wrap:wrap; gap:6px; }
+  .tag{ font-size:12.5px; padding:4px 10px; border-radius:999px; background:rgba(239,234,247,0.7); backdrop-filter:blur(4px); color:var(--ink-soft); border:1px solid rgba(255,255,255,0.5); transition:transform .12s ease; }
+  .tag:hover{ transform:translateY(-1px); }
+  .tag.have{ background:rgba(228,238,236,0.75); color:var(--teal); border-color:rgba(190,218,211,0.7); }
+  .tag.gap{ background:rgba(243,236,251,0.75); color:var(--marigold-deep); border-color:rgba(217,199,240,0.7); }
+
+  .match-badge{ display:inline-flex; align-items:center; gap:6px; font-weight:600; font-size:14.5px; }
+  .match-badge .dot{ width:9px; height:9px; border-radius:50%; }
+  .match-high{ color:var(--teal); } .match-high .dot{ background:var(--teal); animation:pulseDot 1.8s ease-in-out infinite; }
+  .match-mid{ color:var(--marigold-deep); } .match-mid .dot{ background:var(--marigold); }
+  .match-low{ color:var(--slate); } .match-low .dot{ background:var(--slate-light); }
+
+  .btn{ display:inline-block; padding:9px 18px; border-radius:999px; border:1px solid rgba(36,27,58,0.9); background:rgba(36,27,58,0.9); backdrop-filter:blur(6px); color:#fff; font-size:14px; font-weight:600; position:relative; overflow:hidden; transition:background .15s ease, transform .1s ease, box-shadow .15s ease; box-shadow:inset 0 1px 1px rgba(255,255,255,0.15); }
+  .btn:hover{ background:var(--ink-soft); box-shadow:0 4px 14px rgba(36,27,58,.28), inset 0 1px 1px rgba(255,255,255,0.2); }
+  .btn:active{ transform:scale(0.96); }
+  .btn.secondary{ background:rgba(255,255,255,0.45); backdrop-filter:blur(6px); border:1px solid var(--glass-border); color:var(--ink); box-shadow:none; } .btn.secondary:hover{ background:rgba(255,255,255,0.7); }
+  .btn.marigold{ background:linear-gradient(135deg, var(--marigold), #B07AF0); border-color:transparent; color:#fff; } .btn.marigold:hover{ background:linear-gradient(135deg, var(--marigold-deep), var(--marigold)); }
+  .btn.teal{ background:linear-gradient(135deg, var(--teal), #4C9186); border-color:transparent; color:#fff; }
+  .btn:disabled{ opacity:0.5; cursor:default; background:var(--slate-light); border-color:var(--slate-light); }
+  .btn.small{ padding:6px 12px; font-size:13px; } .btn.full{ width:100%; }
+
+  .status-pill{ font-size:12px; font-weight:600; padding:5px 11px; border-radius:999px; display:inline-block; white-space:nowrap; backdrop-filter:blur(4px); }
+  .status-Applied{ background:rgba(243,236,251,0.8); color:var(--marigold-deep); }
+  .status-Shortlisted{ background:rgba(228,238,236,0.8); color:var(--teal); }
+  .status-Enrolled{ background:rgba(243,236,251,0.8); color:var(--marigold-deep); }
+  .status-Completed{ background:rgba(228,238,236,0.8); color:var(--teal); }
+  .status-Interested{ background:rgba(243,236,251,0.8); color:var(--marigold-deep); }
+  .status-Confirmed{ background:rgba(228,238,236,0.8); color:var(--teal); }
+
+  .profile-head{ display:flex; gap:20px; align-items:center; }
+  .avatar{ width:60px; height:60px; border-radius:50%; flex-shrink:0; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces', serif; font-size:22px; font-weight:600; }
+  .profile-name h3{ font-size:20px; } .profile-name .sub{ color:var(--slate); font-size:13.5px; margin-top:2px; }
+
+  .skillbar-row{ display:grid; grid-template-columns:150px 1fr auto; align-items:center; gap:12px; padding:8px 0; }
+  .skillbar-row .name{ font-size:13.5px; font-weight:500; }
+  .skillbar-track{ height:8px; background:#EDE7F5; border-radius:99px; overflow:hidden; }
+  .skillbar-fill{ height:100%; background:var(--teal); border-radius:99px; }
+  .skillbar-row .pct{ font-size:12.5px; color:var(--slate); width:34px; text-align:right; }
+
+  .two-col{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:24px; align-items:start; }
+  @media (max-width:860px){ .two-col{ grid-template-columns:1fr; } .bridge-hero{ grid-template-columns:1fr; } .bridge-mid{ display:none; } }
+
+  .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+  .field{ display:flex; flex-direction:column; gap:6px; } .field.full{ grid-column:1 / -1; }
+  .field label{ font-size:12.5px; font-weight:600; color:var(--ink-soft); }
+  .field input, .field select, .field textarea{ border:1px solid var(--glass-border); padding:9px 12px; border-radius:12px; font-family:inherit; font-size:14px; background:rgba(255,255,255,0.55); backdrop-filter:blur(6px); color:var(--ink); }
+  .field input:focus, .field select:focus, .field textarea:focus{ outline:2px solid var(--marigold); outline-offset:1px; border-color:var(--marigold); background:rgba(255,255,255,0.8); }
+  .field textarea{ resize:vertical; min-height:60px; }
+
+  .chip-picker{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip-opt{ border:1px solid var(--glass-border); background:rgba(255,255,255,0.5); backdrop-filter:blur(6px); padding:7px 13px; border-radius:999px; font-size:13px; color:var(--ink-soft); position:relative; overflow:hidden; transition:background .15s ease, color .15s ease, transform .1s ease; }
+  .chip-opt:active{ transform:scale(0.94); }
+  .chip-opt.on{ background:linear-gradient(135deg, var(--ink), var(--ink-soft)); border-color:transparent; color:#fff; animation:popIn .2s ease; }
+
+  .empty-state{ padding:36px 24px; text-align:center; color:var(--slate); border:1px dashed var(--glass-border); border-radius:16px; }
+  .empty-state h3{ color:var(--ink); font-size:16px; margin-bottom:6px; }
+
+  .tabs{
+    display:flex; gap:2px; margin-bottom:24px; flex-wrap:wrap;
+    background:rgba(255,255,255,0.4); backdrop-filter:blur(12px); border:1px solid var(--glass-border);
+    border-radius:999px; padding:4px; width:fit-content;
+  }
+  .tab-btn{ border:none; background:transparent; padding:9px 18px; margin-right:0; font-size:14px; font-weight:500; color:var(--slate); border-radius:999px; position:relative; top:0; transition:color .15s ease, background .2s ease; }
+  .tab-btn.active{ color:#fff; font-weight:600; background:linear-gradient(135deg, var(--marigold), #B07AF0); box-shadow:0 3px 10px rgba(124,58,237,0.35); animation:liquidMorph .4s cubic-bezier(.34,1.56,.64,1); }
+  .tab-btn:not(.active):hover{ color:var(--ink); background:rgba(255,255,255,0.4); }
+
+  .stat-strip{ display:flex; flex-wrap:wrap; border:1px solid var(--glass-border); background:var(--glass); backdrop-filter:var(--glass-blur); border-radius:20px; overflow:hidden; margin-bottom:26px; box-shadow:0 8px 28px rgba(31,38,135,0.06); }
+  .stat-block{ flex:1; min-width:130px; padding:18px 22px; border-right:1px solid rgba(207,224,243,0.5); transition:background .15s ease; }
+  .stat-block:hover{ background:rgba(255,255,255,0.4); }
+  .stat-block:last-child{ border-right:none; }
+  .stat-block .num{ font-family:'Fraunces', serif; font-size:28px; font-weight:600; }
+  .stat-block .lbl{ font-size:12.5px; color:var(--slate); margin-top:3px; }
+
+  .bar-chart{ display:flex; flex-direction:column; gap:11px; }
+  .bar-row{ display:grid; grid-template-columns:150px 1fr 44px; align-items:center; gap:12px; }
+  .bar-row .name{ font-size:13px; }
+  .bar-track{ height:18px; background:rgba(237,231,245,0.7); border-radius:99px; overflow:hidden; } .bar-fill{ height:100%; background:linear-gradient(90deg, var(--marigold), #B07AF0); border-radius:99px; animation:growBar .6s cubic-bezier(.22,1,.36,1) both; transform-origin:left; }
+  .bar-row .val{ font-size:12.5px; color:var(--slate); text-align:right; }
+
+  table.data{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  table.data th{ text-align:left; font-size:12px; color:var(--slate); font-weight:600; padding:9px 8px; border-bottom:2px solid var(--ink); }
+  table.data td{ padding:11px 8px; border-bottom:1px solid rgba(207,224,243,0.5); }
+  table.data tr{ transition:background .12s ease; }
+  table.data tr:hover td{ background:rgba(255,255,255,0.4); }
+
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(12px) scale(0.94);
+    background:rgba(36,27,58,0.85); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); color:#fff;
+    padding:12px 22px; border-radius:14px; font-size:14px; box-shadow:0 8px 32px rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.15);
+    opacity:0; pointer-events:none; transition:opacity .25s cubic-bezier(.34,1.56,.64,1), transform .25s cubic-bezier(.34,1.56,.64,1); z-index:50;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px) scale(1); }
+
+  .ripple{ position:fixed; border-radius:50%; background:rgba(176,122,240,0.55); transform:scale(0); animation:rippleAnim .55s ease-out; pointer-events:none; z-index:9999; }
+  .btn:active, .role-btn:active, .tab-btn:active, .chip-opt:active, .quiz-opt-btn:active{
+    box-shadow:0 0 0 4px rgba(176,122,240,0.45);
+  }
+  .status-pill{ animation:popIn .28s cubic-bezier(.34,1.56,.64,1); }
+  .avatar{ transition:transform .15s ease; }
+  .panel:hover .avatar{ transform:scale(1.05); }
+
+  @keyframes fadeSlideUp{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
+  @keyframes liquidMorph{ 0%{ border-radius:24px; transform:scale(0.82); } 55%{ border-radius:16px; transform:scale(1.08); } 100%{ border-radius:999px; transform:scale(1); } }
+  @keyframes popIn{ from{ transform:scale(0.7); opacity:0; } to{ transform:scale(1); opacity:1; } }
+  @keyframes pulseDot{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+  @keyframes pulseGlow{ 0%,100%{ box-shadow:0 0 0 0 rgba(124,58,237,0.35); } 50%{ box-shadow:0 0 0 10px rgba(124,58,237,0); } }
+  @keyframes rippleAnim{ to{ transform:scale(2.6); opacity:0; } }
+  @keyframes growBar{ from{ transform:scaleX(0); } to{ transform:scaleX(1); } }
+
+
+  .notification-wrap{position:relative;display:flex;align-items:center;}
+  .notification-btn{position:relative;border:1px solid #55437F;background:#3D2E63;color:#fff;width:42px;height:42px;border-radius:8px;font-size:20px;display:flex;align-items:center;justify-content:center;}
+  .notification-btn:hover{background:rgba(255,255,255,.16);}
+  .notification-count{position:absolute;right:-5px;top:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:99px;background:#EF4444;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);}
+  .notification-panel{position:absolute;right:0;top:50px;width:360px;max-width:calc(100vw - 24px);background:#FFFFFF;color:var(--ink);border:1px solid var(--line);box-shadow:0 12px 40px rgba(36,27,58,.2);z-index:100;display:none;border-radius:16px;overflow:hidden;}
+  .notification-panel.open{display:block;}
+  .notification-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+  .notification-head strong{font-size:15px;}
+  .notification-list{max-height:380px;overflow:auto;}
+  .notification-item{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start;}
+  .notification-item.unread{background:#F7F4FC;}
+  .notification-dot{width:8px;height:8px;border-radius:50%;background:var(--marigold);margin-top:6px;flex-shrink:0;}
+  .notification-item .ntitle{font-size:13.5px;font-weight:600;margin-bottom:3px;}
+  .notification-item .ntime{font-size:11.5px;color:var(--slate-light);}
+  .notification-empty{padding:28px 18px;text-align:center;color:var(--slate);font-size:13px;}
+  @media(max-width:700px){.notification-panel{right:-50px;width:340px}.topbar{padding:14px 16px}.role-switch{order:3;width:100%;justify-content:center}}
+  .footer-note{ text-align:center; font-size:12px; color:var(--slate-light); padding:20px 0 0; }
+
+  /* Assessment quiz */
+  .quiz-q{ padding:18px 0; border-bottom:1px solid var(--line); }
+  .quiz-q:last-of-type{ border-bottom:none; }
+  .quiz-q .qtitle{ font-size:14.5px; font-weight:600; margin-bottom:12px; }
+  .quiz-opt-row{ display:flex; flex-direction:column; gap:8px; }
+  .quiz-opt-btn{ text-align:left; border:1px solid var(--line); background:#fff; padding:11px 14px; border-radius:6px; font-size:13.5px; color:var(--ink); position:relative; overflow:hidden; transition:border-color .15s ease, background .15s ease, transform .1s ease; }
+  .quiz-opt-btn:active{ transform:scale(0.98); }
+  .quiz-opt-btn:hover{ border-color:var(--slate-light); }
+  .quiz-opt-btn.selected{ border-color:var(--marigold); background:#F3ECFB; font-weight:600; }
+
+  .domain-card{ padding:14px 16px; border:1px solid var(--line); margin-bottom:10px; }
+  .domain-card .dname{ font-weight:600; font-size:14.5px; margin-bottom:3px; }
+  .domain-card .dhint{ font-size:12.5px; color:var(--slate); }
+  .resume-print-view{ display:none; }
+  @media print{
+    body > *:not(.resume-print-view){ display:none !important; }
+    body::before, body::after{ display:none !important; }
+    .resume-print-view{ display:block !important; }
+    @page{ margin:16mm; }
+  }
+  .resume-doc{ font-family:'IBM Plex Sans', sans-serif; color:#1A1330; max-width:760px; margin:0 auto; padding:20px; }
+  .resume-doc h1{ font-family:'Fraunces', serif; font-size:30px; margin:0 0 4px; color:#1A1330; }
+  .resume-doc .r-role{ font-size:14px; color:#5B5468; margin-bottom:2px; }
+  .resume-doc .r-meta{ font-size:12.5px; color:#5B5468; margin-bottom:18px; }
+  .resume-doc h2{ font-family:'Fraunces', serif; font-size:15px; text-transform:uppercase; letter-spacing:0.04em; color:#6D28D9; border-bottom:1px solid #D9C7F0; padding-bottom:4px; margin:22px 0 10px; }
+  .resume-doc .r-skills{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:4px; }
+  .resume-doc .r-skill-chip{ font-size:12px; padding:3px 10px; border-radius:999px; background:#F3ECFB; color:#4A3A73; border:1px solid #D9C7F0; }
+  .resume-doc ul{ margin:0; padding-left:18px; }
+  .resume-doc li{ font-size:13px; margin-bottom:5px; line-height:1.5; }
+  .resume-doc .r-row{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; }
+  .resume-doc .r-empty{ font-size:12.5px; color:#8F87A0; font-style:italic; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="resumePrintView" class="resume-print-view"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ CONSTANTS ============ */
+
+const ALL_SKILLS = ["Python","SQL","Data Analysis","Java","React","Cloud (AWS)",
+  "Machine Learning","Communication","UI/UX Design","Digital Marketing",
+  "Embedded C","CAD Design","Node.js","Excel Modeling"];
+
+const SKILL_DOMAINS = {
+  "Python":"Data & Analytics", "SQL":"Data & Analytics", "Data Analysis":"Data & Analytics",
+  "Machine Learning":"Data & Analytics / AI", "React":"Software Product Engineering",
+  "Node.js":"Software Product Engineering", "Java":"Software Product Engineering",
+  "Cloud (AWS)":"Cloud Infrastructure", "Embedded C":"Robotics & Embedded Systems",
+  "CAD Design":"Robotics & Embedded Systems", "UI/UX Design":"Product Design",
+  "Digital Marketing":"Marketing & Growth", "Communication":"Cross-functional / Client-facing roles",
+  "Excel Modeling":"Business & Finance Analytics",
+};
+
+const ASSESSMENT_QUESTIONS = [
+  { skill:"Python", q:"A dataset has duplicate rows. What's your approach?",
+    options:[["I wouldn't know where to start",15],["I'd write a basic loop to check manually",45],["I'd use pandas drop_duplicates()",75],["I'd write a full cleaning pipeline handling edge cases",95]] },
+  { skill:"SQL", q:"You need data spread across two related tables. What do you do?",
+    options:[["Not familiar with SQL",15],["I can write a simple SELECT query",45],["I can JOIN tables and filter results",75],["I can write nested queries and optimise for performance",95]] },
+  { skill:"Data Analysis", q:"You're given a sales trend chart with an unexplained dip. How do you respond?",
+    options:[["I'd just report the numbers as-is",15],["I'd note the dip but not dig further",45],["I'd break it down by segment to find the cause",75],["I'd build a full hypothesis and validate it with data",95]] },
+  { skill:"Communication", q:"You must explain a technical result to a non-technical stakeholder.",
+    options:[["I find this very difficult",20],["I can explain it, but it takes a while",50],["I can simplify it clearly in a few minutes",80],["I regularly present technical work to non-technical audiences",95]] },
+  { skill:"React", q:"You're asked to build an interactive UI component.",
+    options:[["Haven't built one before",15],["I can follow a tutorial to build simple components",45],["I can build components with state and props confidently",75],["I can architect a multi-component app from scratch",95]] },
+  { skill:"Cloud (AWS)", q:"Your app needs to be deployed and made publicly accessible.",
+    options:[["Not familiar with cloud deployment",15],["I've deployed with guidance before",45],["I can deploy and configure basic cloud services myself",75],["I can design a scalable cloud architecture",95]] },
+];
+
+/* ============ STATE ============ */
+
+let state = {
+  role:"student", studentTab:"opportunities", industryTab:"postings",
+  activeCompanyId:"c1", currentStudentId:null, currentAcademicianId:null,
+  industryLoggedIn:false, institutionLoggedIn:false,
+  toastTimer:null, editingProfile:false, editingResume:false, resumeGenerated:false, assessmentAnswers:{},
+  studentLoginName:"", dataLoaded:false,
+  notifications:[],
+  notificationsOpen:false,
+
+  students:[
+    { id:"s1", name:"Ananya Raghavan", course:"B.Tech CSE, Final Year", college:"Sri Meenakshi College of Engineering",
+      skills:{ "Python":85, "SQL":70, "Data Analysis":75, "Communication":60, "Excel Modeling":55 },
+      targetRole:"Data Analyst Intern", achievements:["Runner-up, college-level hackathon 2025"], resumeUrl:"" },
+  ],
+
+  academicians:[
+    { id:"a1", name:"Dr. Lakshmi Narayanan", department:"Computer Science & Engineering", college:"Sri Meenakshi College of Engineering" },
+  ],
+
+  companies:[
+    { id:"c1", name:"BluePeak Analytics", sector:"Data & Analytics" },
+    { id:"c2", name:"NovaWorks Technologies", sector:"Software Products" },
+    { id:"c3", name:"Veridian Robotics", sector:"Robotics & Embedded" },
+    { id:"c4", name:"Orbit Cloud Systems", sector:"Cloud Infrastructure" },
+  ],
+
+  internships:[
+    { id:"i1", companyId:"c1", title:"Data Analyst Intern", type:"Internship", stipend:"₹18,000/mo", duration:"3 months", skills:["Python","SQL","Data Analysis","Communication"] },
+    { id:"i2", companyId:"c2", title:"Frontend Engineering Intern", type:"Internship", stipend:"₹15,000/mo", duration:"6 months", skills:["React","Node.js","Communication"] },
+    { id:"i3", companyId:"c3", title:"Embedded Systems Intern", type:"Apprenticeship", stipend:"₹12,000/mo", duration:"4 months", skills:["Embedded C","CAD Design","Communication"] },
+    { id:"i4", companyId:"c4", title:"Cloud Support Intern", type:"Internship", stipend:"₹20,000/mo", duration:"3 months", skills:["Cloud (AWS)","Python","SQL"] },
+    { id:"i5", companyId:"c1", title:"ML Research Intern", type:"Project", stipend:"₹22,000/mo", duration:"6 months", skills:["Python","Machine Learning","Data Analysis"] },
+    { id:"i6", companyId:"c2", title:"Software Engineer", type:"Job", stipend:"₹6.5 LPA", duration:"Full-time", skills:["Java","React","Communication"] },
+  ],
+  applications:[],
+
+  learningPrograms:[
+    { id:"p1", companyId:"c1", title:"Certified Data Analyst Bootcamp", type:"Certification", skills:["SQL","Data Analysis"], duration:"4 weeks", mode:"Online" },
+    { id:"p2", companyId:"c2", title:"React Fundamentals Workshop", type:"Workshop", skills:["React","Node.js"], duration:"2 weeks", mode:"Online" },
+    { id:"p3", companyId:"c4", title:"AWS Cloud Practitioner Prep", type:"Certification", skills:["Cloud (AWS)"], duration:"3 weeks", mode:"Hybrid" },
+    { id:"p4", companyId:"c3", title:"Embedded Systems Mentorship", type:"Mentorship", skills:["Embedded C","CAD Design"], duration:"6 weeks", mode:"Offline" },
+  ],
+  enrollments:[],
+
+  facultyOpportunities:[
+    { id:"f1", companyId:"c1", title:"Data Science FDP for Faculty", type:"FDP", duration:"1 week", description:"Hands-on faculty development programme on applied data science, co-run with our analytics team." },
+    { id:"f2", companyId:"c3", title:"Industrial Training Attachment", type:"Industrial Training", duration:"2 weeks", description:"Shadow our embedded systems team and bring live case studies back to the classroom." },
+    { id:"f3", companyId:"c2", title:"Curriculum Consultancy: Software Engineering", type:"Consultancy", duration:"Ongoing", description:"Advise on aligning the software engineering curriculum with current industry practice." },
+    { id:"f4", companyId:"c4", title:"Joint Research: Edge Computing", type:"Research Collaboration", duration:"6 months", description:"Collaborative research project on low-latency edge computing, open to faculty and final-year students." },
+  ],
+  facultyInterests:[],
+
+  placementRecords:[
+    { student:"Karthik Subramaniam", company:"NovaWorks Technologies", role:"Software Engineer", package:"₹6.2 LPA" },
+    { student:"Divya Chandrasekaran", company:"Orbit Cloud Systems", role:"Cloud Support Engineer", package:"₹5.4 LPA" },
+    { student:"Rahul Balasubramanian", company:"Veridian Robotics", role:"Embedded Engineer", package:"₹5.8 LPA" },
+    { student:"Priya Venkataraman", company:"BluePeak Analytics", role:"Data Analyst", package:"₹7.1 LPA" },
+  ],
+};
+
+/* ============ HELPERS ============ */
+
+function buildResumeHTML(student){
+  const skillEntries = Object.entries(student.skills).sort((a,b)=>b[1]-a[1]);
+  const completed = state.enrollments.filter(e=>e.studentId===student.id && e.status==='Completed').map(e=>state.learningPrograms.find(p=>p.id===e.programId)).filter(Boolean);
+  const apps = state.applications.filter(a=>a.studentId===student.id).map(a=>({app:a, i:state.internships.find(i=>i.id===a.internshipId)})).filter(x=>x.i);
+
+  return `
+    <div class="resume-doc">
+      <h1>${student.name}</h1>
+      <div class="r-role">${student.targetRole || 'Aspiring ' + (skillEntries[0] ? skillEntries[0][0] : 'Professional')}</div>
+      <div class="r-meta">${[student.course, student.college].filter(Boolean).join(' · ')}</div>
+
+      <h2>Skills</h2>
+      ${skillEntries.length ? `<div class="r-skills">${skillEntries.map(([name,val])=>`<span class="r-skill-chip">${name} — ${val}%</span>`).join('')}</div>` : `<div class="r-empty">No skills recorded yet.</div>`}
+
+      <h2>Certifications &amp; Learning Programmes</h2>
+      ${completed.length ? `<ul>${completed.map(p=>`<li>${p.title} <span style="color:#8F87A0;">— ${getCompany(p.companyId).name} (${p.type})</span></li>`).join('')}</ul>` : `<div class="r-empty">No certifications completed yet.</div>`}
+
+      <h2>Internship &amp; Job Applications</h2>
+      ${apps.length ? `<ul>${apps.map(({app,i})=>`<li class="r-row"><span>${i.title} — ${getCompany(i.companyId).name}</span><span>${app.status}</span></li>`).join('')}</ul>` : `<div class="r-empty">No applications yet.</div>`}
+
+      <h2>Achievements</h2>
+      ${student.achievements && student.achievements.length ? `<ul>${student.achievements.map(a=>`<li>${a}</li>`).join('')}</ul>` : `<div class="r-empty">No achievements added yet.</div>`}
+    </div>
+  `;
+}
+
+function openResumePrintView(student){
+  const container = document.getElementById('resumePrintView');
+  container.innerHTML = buildResumeHTML(student);
+  window.print();
+}
+
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(state.toastTimer); state.toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+function addNotification(title, message){
+  state.notifications.unshift({id:'n_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),title,message,time:new Date().toLocaleString(),read:false});
+  state.notifications=state.notifications.slice(0,30); saveKey('notifications', state.notifications);
+}
+function unreadNotifications(){ return state.notifications.filter(n=>!n.read).length; }
+function notificationBell(){
+  const count=unreadNotifications();
+  return `<div class="notification-wrap"><button type="button" class="notification-btn" id="notificationBtn" aria-label="Notifications">🔔${count?`<span class="notification-count">${count>99?'99+':count}</span>`:''}</button><div class="notification-panel ${state.notificationsOpen?'open':''}" id="notificationPanel"><div class="notification-head"><strong>Notifications</strong>${count?`<button type="button" class="btn secondary small" id="markAllReadBtn">Mark all read</button>`:''}</div><div class="notification-list">${state.notifications.length?state.notifications.map(n=>`<div class="notification-item ${n.read?'':'unread'}" data-notification="${n.id}"><span class="notification-dot"></span><div><div class="ntitle">${n.title}</div><div style="font-size:12.5px;color:var(--slate);margin-bottom:3px;">${n.message}</div><div class="ntime">${n.time}</div></div></div>`).join(''):`<div class="notification-empty">No notifications yet.</div>`}</div></div></div>`;
+}
+
+function getStudent(id){ return state.students.find(s=>s.id===id); }
+function getAcademician(id){ return state.academicians.find(a=>a.id===id); }
+function getCompany(id){ return state.companies.find(c=>c.id===id); }
+function matchPercent(student, internship){
+  const have=Object.keys(student.skills); const req=internship.skills;
+  const overlap=req.filter(sk=>have.includes(sk));
+  return Math.round((overlap.length/req.length)*100);
+}
+function matchClass(pct){ return pct>=70?"match-high":pct>=40?"match-mid":"match-low"; }
+function applicationFor(studentId, internshipId){ return state.applications.find(a=>a.studentId===studentId && a.internshipId===internshipId); }
+function enrollmentFor(studentId, programId){ return state.enrollments.find(e=>e.studentId===studentId && e.programId===programId); }
+function interestFor(academicianId, opportunityId){ return state.facultyInterests.find(f=>f.academicianId===academicianId && f.opportunityId===opportunityId); }
+
+function render(){ document.getElementById('app').innerHTML = App(); attachHandlers(); }
+
+function setupRippleEffect(){
+  const appEl = document.getElementById('app');
+  appEl.addEventListener('click', function(e){
+    const target = e.target.closest('.btn, .role-btn, .tab-btn, .chip-opt, .quiz-opt-btn');
+    if(!target) return;
+    const rect = target.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 1.4;
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.left = (e.clientX - size/2) + 'px';
+    ripple.style.top = (e.clientY - size/2) + 'px';
+    ripple.style.width = ripple.style.height = size + 'px';
+    document.body.appendChild(ripple);
+    setTimeout(()=>{ ripple.remove(); }, 550);
+  });
+}
+
+async function saveKey(key, value){
+  try{ await window.storage.set(key, JSON.stringify(value), true); }catch(err){ console.error('save failed', key, err); }
+}
+async function loadKey(key, fallbackSave){
+  try{
+    const stored = await window.storage.get(key, true);
+    if(stored && stored.value){ return JSON.parse(stored.value); }
+    await fallbackSave(); return null;
+  }catch(err){ await fallbackSave(); return null; }
+}
+async function loadSharedData(){
+  const notifications = await loadKey('notifications', ()=>saveKey('notifications', state.notifications));
+  if(notifications) state.notifications = notifications;
+  const companies = await loadKey('companies', ()=>saveKey('companies', state.companies));
+  if(companies) state.companies = companies;
+  const students = await loadKey('students', ()=>saveKey('students', state.students));
+  if(students) state.students = students;
+  const academicians = await loadKey('academicians', ()=>saveKey('academicians', state.academicians));
+  if(academicians) state.academicians = academicians;
+  const internships = await loadKey('internships', ()=>saveKey('internships', state.internships));
+  if(internships) state.internships = internships;
+  const applications = await loadKey('applications', ()=>saveKey('applications', state.applications));
+  if(applications) state.applications = applications;
+  const learningPrograms = await loadKey('learningPrograms', ()=>saveKey('learningPrograms', state.learningPrograms));
+  if(learningPrograms) state.learningPrograms = learningPrograms;
+  const enrollments = await loadKey('enrollments', ()=>saveKey('enrollments', state.enrollments));
+  if(enrollments) state.enrollments = enrollments;
+  const facultyOpportunities = await loadKey('facultyOpportunities', ()=>saveKey('facultyOpportunities', state.facultyOpportunities));
+  if(facultyOpportunities) state.facultyOpportunities = facultyOpportunities;
+  const facultyInterests = await loadKey('facultyInterests', ()=>saveKey('facultyInterests', state.facultyInterests));
+  if(facultyInterests) state.facultyInterests = facultyInterests;
+}
+
+/* ============ SHELL ============ */
+
+function App(){
+  return `
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">${logoSvg()}</div>
+        <div><div class="brand-text">KCET</div><div class="brand-sub">Skill Mapping &middot; Internships &middot; Placements &middot; Faculty Collaboration</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="role-switch">
+        <button class="role-btn ${state.role==='student'?'active':''}" data-role="student">Student</button>
+        <button class="role-btn ${state.role==='academician'?'active':''}" data-role="academician">Academician</button>
+        <button class="role-btn ${state.role==='industry'?'active':''}" data-role="industry">Industry</button>
+        <button class="role-btn ${state.role==='institution'?'active':''}" data-role="institution">Institution</button>
+        </div>
+      </div>
+    </div>
+    <main><div class="wrap">
+      ${ state.role==='student' ? StudentView() : state.role==='academician' ? AcademicianView() : state.role==='industry' ? IndustryView() : InstitutionView() }
+    </div></main>
+    <div class="footer-note">KCET — prototype demo. Internship, programme, and opportunity data is shared and persists; individual profile edits stay local to this session.</div>
+  `;
+}
+function logoSvg(){
+  return `<svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 24 C 2 14, 10 8, 17 8 C 24 8, 32 14, 32 24" stroke="#7C3AED" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="6" cy="26" r="3" fill="#fff"/><circle cx="28" cy="26" r="3" fill="#fff"/></svg>`;
+}
+
+/* ============ STUDENT ============ */
+
+function StudentLoginScreen(){
+  return `
+    <div style="max-width:420px;margin:60px auto;">
+      <div class="panel">
+        <h3 style="font-size:20px;margin-bottom:6px;">Student Login</h3>
+        <p style="font-size:13.5px;color:var(--slate);margin-bottom:20px;">Enter your name to continue to your profile.</p>
+        <div class="field full" style="margin-bottom:16px;">
+          <label>Your name</label>
+          <input type="text" id="studentLoginInput" placeholder="e.g. Ananya Raghavan" value="${state.studentLoginName}">
+        </div>
+        <button type="button" class="btn full" id="studentLoginBtn">Login</button>
+        ${!state.dataLoaded ? `<p style="font-size:12px;color:var(--slate-light);margin-top:10px;">Loading saved profiles…</p>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function logoutStudent(){
+  state.currentStudentId = null;
+  state.studentLoginName = "";
+  state.studentTab = "opportunities";
+  state.editingProfile = false;
+  state.editingResume = false;
+  state.resumeGenerated = false;
+}
+
+function StudentView(){
+  if(!state.currentStudentId){ return StudentLoginScreen(); }
+  const student = getStudent(state.currentStudentId);
+  const rankedInternships = [...state.internships].map(i=>({i,pct:matchPercent(student,i)})).sort((a,b)=>b.pct-a.pct);
+  const myEnrollments = state.enrollments.filter(e=>e.studentId===student.id);
+
+  return `
+    <div class="bridge-hero">
+      <div class="bridge-side"><div class="eyebrow serif">ACADEMIA</div>
+        <h2>Your skills, mapped against what industry actually wants.</h2>
+        <p>Take the skill assessment, close your gaps with learning programmes, and build a verified portfolio.</p></div>
+      <div class="bridge-mid"></div>
+      <div class="bridge-side"><div class="eyebrow serif">INDUSTRY</div>
+        <h2>Internships, jobs, and programmes ranked by real fit.</h2>
+        <p>${rankedInternships.length} live postings and ${state.learningPrograms.length} learning programmes from ${state.companies.length} partner companies.</p></div>
+      <div class="bridge-stats">
+        <div class="bstat marigold"><div class="num">${rankedInternships.filter(r=>r.pct>=70).length}</div><div class="lbl">strong matches</div></div>
+        <div class="bstat teal"><div class="num">${state.applications.filter(a=>a.studentId===student.id).length}</div><div class="lbl">applications</div></div>
+        <div class="bstat"><div class="num">${myEnrollments.filter(e=>e.status==='Completed').length}</div><div class="lbl">certifications earned</div></div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn ${state.studentTab==='opportunities'?'active':''}" data-stab="opportunities">Opportunities</button>
+      <button class="tab-btn ${state.studentTab==='assessment'?'active':''}" data-stab="assessment">Skill Assessment &amp; Mapping</button>
+      <button class="tab-btn ${state.studentTab==='programs'?'active':''}" data-stab="programs">Learning Programmes</button>
+      <button class="tab-btn ${state.studentTab==='portfolio'?'active':''}" data-stab="portfolio">Digital Portfolio</button>
+    </div>
+
+    ${ state.studentTab==='opportunities' ? studentOpportunitiesTab(student, rankedInternships)
+      : state.studentTab==='assessment' ? studentAssessmentTab(student)
+      : state.studentTab==='programs' ? studentProgramsTab(student)
+      : studentPortfolioTab(student) }
+  `;
+}
+
+function studentOpportunitiesTab(student, rankedInternships){
+  return `
+    <div class="two-col">
+      <div>
+        <div class="section-head"><h2>Recommended internships &amp; jobs</h2><span class="hint">ranked by skill match</span></div>
+        <div class="row-list">${rankedInternships.map(({i,pct})=>internshipRow(i,pct,student)).join('')}</div>
+      </div>
+      <div>
+        <div class="panel">
+          ${state.editingProfile ? profileEditForm(student) : profileSummary(student)}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function profileSummary(student){
+  const skillEntries = Object.entries(student.skills).sort((a,b)=>b[1]-a[1]);
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div class="profile-head">
+        <div class="avatar">${student.name.split(' ').map(n=>n[0]).slice(0,2).join('')}</div>
+        <div class="profile-name"><h3>${student.name}</h3><div class="sub">${student.course}</div><div class="sub">${student.college}</div></div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn secondary small" data-edit-profile="1">Edit</button>
+        <button class="btn secondary small" data-logout-student="1">Logout</button>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      ${skillEntries.length ? skillEntries.map(([name,val])=>`
+        <div class="skillbar-row"><div class="name">${name}</div>
+          <div class="skillbar-track"><div class="skillbar-fill" style="width:${val}%;"></div></div>
+          <div class="pct">${val}%</div></div>
+      `).join('') : `<p style="color:var(--slate-light);font-size:13.5px;">No skills yet — take the Skill Assessment tab.</p>`}
+    </div>
+  `;
+}
+
+function profileEditForm(student){
+  const roleOptions = [...new Set(state.internships.map(i=>i.title))];
+  return `
+    <h3 style="font-size:17px;margin-bottom:16px;">Edit your profile</h3>
+    <div id="profileFormWrap">
+      <div class="form-grid">
+        <div class="field full"><label>Your name</label><input type="text" id="profileNameInput" value="${student.name}"></div>
+        <div class="field"><label>Course / year</label><input type="text" id="profileCourseInput" value="${student.course}"></div>
+        <div class="field"><label>College</label><input type="text" id="profileCollegeInput" value="${student.college}"></div>
+        <div class="field full"><label>Target role</label>
+          <select id="profileTargetRoleSelect">${roleOptions.map(r=>`<option value="${r}" ${r===student.targetRole?'selected':''}>${r}</option>`).join('')}</select>
+        </div>
+        <div class="field full"><label>Your skills — tap to select, then set your level</label>
+          <div class="chip-picker" id="profileSkillPicker">
+            ${ALL_SKILLS.map(sk=>`<button type="button" class="chip-opt ${sk in student.skills?'on':''}" data-skill="${sk}">${sk}</button>`).join('')}
+          </div>
+        </div>
+        <div class="field full" id="skillLevels"></div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button type="button" class="btn" id="saveProfileBtn" style="flex:1;">Save profile</button>
+        <button type="button" class="btn secondary" data-cancel-edit="1">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+function internshipRow(internship, pct, student){
+  const company=getCompany(internship.companyId);
+  const app=applicationFor(student.id, internship.id);
+  const have=internship.skills.filter(sk=>sk in student.skills);
+  const gap=internship.skills.filter(sk=>!(sk in student.skills));
+  const rowClass = app?'applied':(pct>=70?'matched':'');
+  return `
+    <div class="row-item ${rowClass}">
+      <div class="row-main">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span class="type-pill">${internship.type}</span><h3 style="margin:0;">${internship.title}</h3>
+        </div>
+        <div class="row-meta"><span>${company.name}</span><span>·</span><span>${internship.stipend}</span><span>·</span><span>${internship.duration}</span></div>
+        <div class="tags">${have.map(s=>`<span class="tag have">${s}</span>`).join('')}${gap.map(s=>`<span class="tag gap">${s}</span>`).join('')}</div>
+      </div>
+      <div class="row-side">
+        <div class="match-badge ${matchClass(pct)}"><span class="dot"></span>${pct}% match</div>
+        <div style="margin-top:12px;">
+          ${app ? `<span class="status-pill status-${app.status}">${app.status}</span>` : `<button class="btn marigold small" data-apply="${internship.id}">Apply</button>`}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function studentAssessmentTab(student){
+  const answered = ASSESSMENT_QUESTIONS.every(q => state.assessmentAnswers[q.skill] !== undefined);
+  const skillEntries = Object.entries(student.skills).sort((a,b)=>b[1]-a[1]);
+  const topDomains = [...new Set(skillEntries.slice(0,3).map(([sk])=>SKILL_DOMAINS[sk]).filter(Boolean))];
+  const targetInternship = state.internships.find(i=>i.title===student.targetRole) || state.internships[0];
+  const gaps = targetInternship.skills.filter(sk=>!(sk in student.skills));
+  const gapProgrammes = state.learningPrograms.filter(p=>p.skills.some(sk=>gaps.includes(sk)));
+
+  return `
+    <div class="two-col">
+      <div>
+        <div class="section-head"><h2>Skill assessment</h2><span class="hint">answer honestly — this drives your matches</span></div>
+        <div class="panel">
+          ${ASSESSMENT_QUESTIONS.map(q => `
+            <div class="quiz-q">
+              <div class="qtitle">${q.q}</div>
+              <div class="quiz-opt-row">
+                ${q.options.map(([label,score]) => `
+                  <button type="button" class="quiz-opt-btn ${state.assessmentAnswers[q.skill]===score?'selected':''}" data-qskill="${q.skill}" data-qscore="${score}">${label}</button>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+          <button class="btn full" id="submitAssessmentBtn" style="margin-top:6px;">Save assessment to my profile</button>
+        </div>
+      </div>
+      <div>
+        <div class="panel">
+          <h3 style="font-size:16px;margin-bottom:10px;">Skill mapping — recommended for you</h3>
+          ${topDomains.length ? `
+            <p style="font-size:13px;color:var(--slate);margin-bottom:10px;">Based on your strongest skills, you're a fit for:</p>
+            ${topDomains.map(d=>`<div class="domain-card"><div class="dname">${d}</div><div class="dhint">Matches ${state.internships.filter(i=>i.skills.some(sk=>SKILL_DOMAINS[sk]===d)).length} open postings</div></div>`).join('')}
+          ` : `<p style="font-size:13.5px;color:var(--slate-light);">Complete the assessment or edit your profile to see your recommended domains.</p>`}
+        </div>
+        <div class="panel">
+          <h3 style="font-size:16px;margin-bottom:10px;">Gap for ${student.targetRole}</h3>
+          ${gaps.length ? `<div class="tags" style="margin-bottom:12px;">${gaps.map(g=>`<span class="tag gap">${g}</span>`).join('')}</div>
+            ${gapProgrammes.length ? `<p style="font-size:13px;color:var(--slate);margin-bottom:8px;">Programmes that can close this gap:</p>
+              ${gapProgrammes.map(p=>`<div style="font-size:13.5px;margin-bottom:4px;">• ${p.title} <span style="color:var(--slate-light);">(${getCompany(p.companyId).name})</span></div>`).join('')}
+              <button class="btn secondary small" style="margin-top:8px;" data-stab-link="programs">Go to Learning Programmes →</button>` : ''}
+          ` : `<p style="color:var(--teal);font-size:14px;">You already cover every skill for this role. 🎯</p>`}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function studentProgramsTab(student){
+  return `
+    <div class="section-head"><h2>Learning programmes</h2><span class="hint">certifications, workshops &amp; mentorships from partner companies</span></div>
+    <div class="row-list">
+      ${state.learningPrograms.map(p => {
+        const company=getCompany(p.companyId); const enr=enrollmentFor(student.id,p.id);
+        return `
+        <div class="row-item ${enr?'applied':''}">
+          <div class="row-main">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <span class="type-pill">${p.type}</span><h3 style="margin:0;">${p.title}</h3>
+            </div>
+            <div class="row-meta"><span>${company.name}</span><span>·</span><span>${p.duration}</span><span>·</span><span>${p.mode}</span></div>
+            <div class="tags">${p.skills.map(s=>`<span class="tag ${s in student.skills?'have':'gap'}">${s}</span>`).join('')}</div>
+          </div>
+          <div class="row-side">
+            ${ enr
+              ? `<span class="status-pill status-${enr.status}">${enr.status}</span>
+                 ${enr.status==='Enrolled' ? `<div style="margin-top:10px;"><button class="btn teal small" data-complete-program="${p.id}">Mark complete</button></div>` : ''}`
+              : `<button class="btn marigold small" data-enroll="${p.id}">Enroll</button>` }
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function studentPortfolioTab(student){
+  const skillEntries = Object.entries(student.skills).sort((a,b)=>b[1]-a[1]);
+  const completed = state.enrollments.filter(e=>e.studentId===student.id && e.status==='Completed').map(e=>state.learningPrograms.find(p=>p.id===e.programId));
+  const apps = state.applications.filter(a=>a.studentId===student.id).map(a=>({app:a, i:state.internships.find(i=>i.id===a.internshipId)}));
+
+  return `
+    <div class="panel">
+      <div class="profile-head">
+        <div class="avatar">${student.name.split(' ').map(n=>n[0]).slice(0,2).join('')}</div>
+        <div class="profile-name"><h3>${student.name}</h3><div class="sub">${student.course}</div><div class="sub">${student.college}</div></div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="panel">
+          <h3 style="font-size:16px;margin-bottom:12px;">Verified skills</h3>
+          ${skillEntries.map(([name,val])=>`
+            <div class="skillbar-row"><div class="name">${name}</div>
+              <div class="skillbar-track"><div class="skillbar-fill" style="width:${val}%;"></div></div><div class="pct">${val}%</div></div>
+          `).join('') || `<p style="color:var(--slate-light);font-size:13.5px;">No skills recorded yet.</p>`}
+        </div>
+        <div class="panel">
+          <h3 style="font-size:16px;margin-bottom:10px;">Certifications</h3>
+          ${completed.length ? `<div class="tags">${completed.map(p=>`<span class="tag have">${p.title}</span>`).join('')}</div>` : `<p style="color:var(--slate-light);font-size:13.5px;">Complete a learning programme to earn your first certification.</p>`}
+        </div>
+        <div class="panel">
+          <h3 style="font-size:16px;margin-bottom:10px;">Internship &amp; job applications</h3>
+          ${apps.length ? apps.map(({app,i})=>`
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);">
+              <span style="font-size:13.5px;">${i.title}</span><span class="status-pill status-${app.status}">${app.status}</span>
+            </div>`).join('') : `<p style="color:var(--slate-light);font-size:13.5px;">No applications yet.</p>`}
+        </div>
+        <div class="panel">
+          <h3 style="font-size:16px;margin-bottom:10px;">Achievements</h3>
+          ${student.achievements && student.achievements.length ? `<ul style="margin:0;padding-left:18px;font-size:13.5px;color:var(--ink-soft);">${student.achievements.map(a=>`<li style="margin-bottom:4px;">${a}</li>`).join('')}</ul>` : `<p style="color:var(--slate-light);font-size:13.5px;">No achievements added yet.</p>`}
+        </div>
+      </div>
+      <div>
+        <div class="panel">
+          <h3 style="font-size:16px;margin-bottom:8px;">Create Resume</h3>
+          ${ !state.resumeGenerated ? `
+            <p style="color:var(--slate);font-size:13px;margin-bottom:14px;">Build a resume automatically from the details on the left — skills, certifications, applications, and achievements.</p>
+            <button type="button" class="btn marigold full" id="createResumeBtn">Create Resume</button>
+          ` : `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <span style="font-size:13px;color:var(--slate);">Generated from your current profile</span>
+              <button type="button" class="btn secondary small" id="regenerateResumeBtn">Regenerate</button>
+            </div>
+            <div style="background:#fff;border:1px solid var(--glass-border);border-radius:14px;padding:6px;margin-bottom:14px;max-height:520px;overflow-y:auto;">
+              ${buildResumeHTML(student)}
+            </div>
+            <button type="button" class="btn marigold full" id="printResumeBtn">Download / Print Resume</button>
+          ` }
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ============ ACADEMICIAN ============ */
+
+
+
+function AcademicianLoginScreen(){
+  return `
+    <div style="max-width:420px;margin:60px auto;">
+      <div class="panel">
+        <h3 style="font-size:20px;margin-bottom:6px;">Academician Access</h3>
+        <p style="font-size:13.5px;color:var(--slate);margin-bottom:20px;">Continue without a password.</p>
+        <button type="button" class="btn full" id="acadLoginBtn">Continue</button>
+      </div>
+    </div>`;
+}
+
+function IndustryLoginScreen(){
+  return `
+    <div style="max-width:420px;margin:60px auto;">
+      <div class="panel">
+        <h3 style="font-size:20px;margin-bottom:6px;">Industry Access</h3>
+        <p style="font-size:13.5px;color:var(--slate);margin-bottom:20px;">Enter your company or industry name.</p>
+        <div class="field full" style="margin-bottom:16px;"><label>Company / Industry Name</label>
+          <input type="text" id="industryLoginCompany" placeholder="e.g. ABC Technologies" list="companySuggestions">
+          <datalist id="companySuggestions">${state.companies.map(c=>`<option value="${c.name}"></option>`).join('')}</datalist>
+        </div>
+        <button type="button" class="btn full" id="industryLoginBtn">Continue</button>
+      </div>
+    </div>`;
+}
+
+function InstitutionLoginScreen(){
+  return `
+    <div style="max-width:420px;margin:60px auto;">
+      <div class="panel">
+        <h3 style="font-size:20px;margin-bottom:6px;">Institution Access</h3>
+        <p style="font-size:13.5px;color:var(--slate);margin-bottom:20px;">Continue without a password.</p>
+        <button type="button" class="btn full" id="institutionLoginBtn">Continue</button>
+      </div>
+    </div>`;
+}
+
+function AcademicianView(){
+  if(!state.currentAcademicianId){ return AcademicianLoginScreen(); }
+  const acad = getAcademician(state.currentAcademicianId);
+  const myInterests = state.facultyInterests.filter(f=>f.academicianId===acad.id);
+
+  return `
+    <div class="section-head">
+      <div><h2 style="display:inline;">Academician Dashboard</h2></div>
+      <button class="btn secondary small" data-logout-academician="1">Logout</button>
+    </div>
+    <div class="stat-strip">
+      <div class="stat-block"><div class="num">${state.facultyOpportunities.length}</div><div class="lbl">open opportunities</div></div>
+      <div class="stat-block"><div class="num">${myInterests.length}</div><div class="lbl">expressed interest</div></div>
+      <div class="stat-block"><div class="num">${myInterests.filter(f=>f.status==='Confirmed').length}</div><div class="lbl">confirmed</div></div>
+    </div>
+    <div class="section-head"><h2>Faculty &amp; institutional engagement</h2><span class="hint">FDPs, industrial training, consultancy &amp; research</span></div>
+    <div class="row-list">
+      ${state.facultyOpportunities.map(o => {
+        const company=getCompany(o.companyId); const interest=interestFor(acad.id,o.id);
+        return `
+        <div class="row-item ${interest?'applied':''}">
+          <div class="row-main">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <span class="type-pill">${o.type}</span><h3 style="margin:0;">${o.title}</h3>
+            </div>
+            <div class="row-meta"><span>${company.name}</span><span>·</span><span>${o.duration}</span></div>
+            <p style="font-size:13.5px;color:var(--slate);max-width:60ch;margin:0;">${o.description}</p>
+          </div>
+          <div class="row-side">
+            ${interest ? `<span class="status-pill status-${interest.status}">${interest.status}</span>` : `<button class="btn marigold small" data-interest="${o.id}">Express interest</button>`}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+/* ============ INDUSTRY ============ */
+
+function IndustryView(){
+  if(!state.industryLoggedIn){ return IndustryLoginScreen(); }
+  const company = getCompany(state.activeCompanyId);
+  const myPostings = state.internships.filter(i=>i.companyId===company.id);
+  const myPrograms = state.learningPrograms.filter(p=>p.companyId===company.id);
+  const myOpportunities = state.facultyOpportunities.filter(o=>o.companyId===company.id);
+  const totalApplicants = myPostings.reduce((sum,i)=>sum+state.applications.filter(a=>a.internshipId===i.id).length,0);
+  const totalEnrollees = myPrograms.reduce((sum,p)=>sum+state.enrollments.filter(e=>e.programId===p.id).length,0);
+
+  return `
+    <div class="section-head">
+      <h2>Recruiter &amp; partnerships dashboard</h2>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <select id="companyPicker" style="border:1px solid var(--line);padding:8px 12px;border-radius:6px;background:#fff;font-family:inherit;">
+          ${state.companies.map(c=>`<option value="${c.id}" ${c.id===company.id?'selected':''}>${c.name}</option>`).join('')}
+        </select>
+        <button class="btn secondary small" data-logout-industry="1">Logout</button>
+      </div>
+    </div>
+    <div class="stat-strip">
+      <div class="stat-block"><div class="num">${myPostings.length}</div><div class="lbl">postings</div></div>
+      <div class="stat-block"><div class="num">${totalApplicants}</div><div class="lbl">applicants</div></div>
+      <div class="stat-block"><div class="num">${myPrograms.length}</div><div class="lbl">programmes posted</div></div>
+      <div class="stat-block"><div class="num">${totalEnrollees}</div><div class="lbl">enrollees</div></div>
+      <div class="stat-block"><div class="num">${myOpportunities.length}</div><div class="lbl">faculty opportunities</div></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn ${state.industryTab==='postings'?'active':''}" data-itab="postings">Internships &amp; Jobs</button>
+      <button class="tab-btn ${state.industryTab==='programs'?'active':''}" data-itab="programs">Learning Programmes</button>
+      <button class="tab-btn ${state.industryTab==='faculty'?'active':''}" data-itab="faculty">Faculty Opportunities</button>
+    </div>
+
+    ${ state.industryTab==='postings' ? industryPostingsTab(myPostings)
+      : state.industryTab==='programs' ? industryProgramsTab(myPrograms)
+      : industryFacultyTab(myOpportunities) }
+  `;
+}
+
+function industryPostingsTab(myPostings){
+  return `
+    <div class="two-col">
+      <div>
+        <div class="section-head"><h2>Your postings &amp; applicants</h2></div>
+        ${myPostings.map(i=>postingBlock(i)).join('') || emptyState("No postings yet","Use the form to post your first internship or job.")}
+      </div>
+      <div>
+        <div class="panel">
+          <h3 style="font-size:16px;margin-bottom:14px;">Post an internship / job</h3>
+          <div id="postFormWrap">
+            <div class="form-grid">
+              <div class="field full"><label>Role title</label><input type="text" id="postTitleInput" placeholder="e.g. Backend Engineering Intern"></div>
+              <div class="field"><label>Type</label>
+                <select id="postTypeInput"><option>Internship</option><option>Job</option><option>Apprenticeship</option><option>Project</option></select>
+              </div>
+              <div class="field"><label>Stipend / package</label><input type="text" id="postStipendInput" placeholder="₹15,000/mo"></div>
+              <div class="field full"><label>Duration</label><input type="text" id="postDurationInput" placeholder="3 months"></div>
+              <div class="field full"><label>Required skills</label>
+                <div class="chip-picker" id="skillPicker">${ALL_SKILLS.map(sk=>`<button type="button" class="chip-opt" data-skill="${sk}">${sk}</button>`).join('')}</div>
+              </div>
+            </div>
+            <button type="button" class="btn full" id="postSubmitBtn">Post opening</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function postingBlock(internship){
+  const applicants = state.applications.filter(a=>a.internshipId===internship.id)
+    .map(a=>({app:a, student:getStudent(a.studentId), pct:matchPercent(getStudent(a.studentId), internship)})).sort((a,b)=>b.pct-a.pct);
+  return `
+    <div class="panel" style="margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:8px;"><span class="type-pill">${internship.type}</span><h3 style="font-size:16.5px;">${internship.title}</h3></div>
+        <span style="font-size:12.5px;color:var(--slate);">${internship.stipend} · ${internship.duration}</span>
+      </div>
+      <div class="tags" style="margin-bottom:14px;">${internship.skills.map(s=>`<span class="tag">${s}</span>`).join('')}</div>
+      ${ applicants.length ? `
+        <table class="data"><thead><tr><th>Applicant</th><th>Match</th><th>Status</th><th></th></tr></thead>
+        <tbody>${applicants.map(({app,student,pct})=>`
+          <tr><td>${student.name}<br><span style="color:var(--slate-light);font-size:12px;">${student.course}</span></td>
+            <td><span class="match-badge ${matchClass(pct)}"><span class="dot"></span>${pct}%</span></td>
+            <td><span class="status-pill status-${app.status}">${app.status}</span></td>
+            <td style="text-align:right;">${app.status!=='Shortlisted'?`<button class="btn secondary small" data-shortlist="${student.id}|${internship.id}">Shortlist</button>`:''}</td>
+          </tr>`).join('')}</tbody></table>
+      ` : `<p style="color:var(--slate-light);font-size:13px;">No applicants yet.</p>` }
+    </div>
+  `;
+}
+
+function industryProgramsTab(myPrograms){
+  return `
+    <div class="two-col">
+      <div>
+        <div class="section-head"><h2>Your learning programmes</h2></div>
+        ${myPrograms.map(p=>programBlock(p)).join('') || emptyState("No programmes posted","Post a certification, workshop, or mentorship below.")}
+      </div>
+      <div>
+        <div class="panel">
+          <h3 style="font-size:16px;margin-bottom:14px;">Post a learning programme</h3>
+          <div id="progFormWrap">
+            <div class="form-grid">
+              <div class="field full"><label>Programme title</label><input type="text" id="progTitleInput" placeholder="e.g. Cloud Fundamentals Certification"></div>
+              <div class="field"><label>Type</label><select id="progTypeInput"><option>Certification</option><option>Workshop</option><option>Mentorship</option></select></div>
+              <div class="field"><label>Mode</label><select id="progModeInput"><option>Online</option><option>Offline</option><option>Hybrid</option></select></div>
+              <div class="field full"><label>Duration</label><input type="text" id="progDurationInput" placeholder="4 weeks"></div>
+              <div class="field full"><label>Skills covered</label>
+                <div class="chip-picker" id="progSkillPicker">${ALL_SKILLS.map(sk=>`<button type="button" class="chip-opt" data-skill="${sk}">${sk}</button>`).join('')}</div>
+              </div>
+            </div>
+            <button type="button" class="btn full" id="progSubmitBtn">Post programme</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function programBlock(program){
+  const enrollees = state.enrollments.filter(e=>e.programId===program.id).map(e=>({e,student:getStudent(e.studentId)}));
+  return `
+    <div class="panel" style="margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:8px;"><span class="type-pill">${program.type}</span><h3 style="font-size:16.5px;">${program.title}</h3></div>
+        <span style="font-size:12.5px;color:var(--slate);">${program.duration} · ${program.mode}</span>
+      </div>
+      <div class="tags" style="margin-bottom:14px;">${program.skills.map(s=>`<span class="tag">${s}</span>`).join('')}</div>
+      ${ enrollees.length ? enrollees.map(({e,student})=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);">
+          <span style="font-size:13.5px;">${student.name}</span><span class="status-pill status-${e.status}">${e.status}</span>
+        </div>`).join('') : `<p style="color:var(--slate-light);font-size:13px;">No enrollees yet.</p>` }
+    </div>
+  `;
+}
+
+function industryFacultyTab(myOpportunities){
+  return `
+    <div class="two-col">
+      <div>
+        <div class="section-head"><h2>Your faculty opportunities</h2></div>
+        ${myOpportunities.map(o=>facultyOppBlock(o)).join('') || emptyState("No opportunities posted","Post an FDP, industrial training, consultancy, or research collaboration below.")}
+      </div>
+      <div>
+        <div class="panel">
+          <h3 style="font-size:16px;margin-bottom:14px;">Post a faculty opportunity</h3>
+          <div id="foFormWrap">
+            <div class="form-grid">
+              <div class="field full"><label>Title</label><input type="text" id="foTitleInput" placeholder="e.g. AI in Manufacturing FDP"></div>
+              <div class="field"><label>Type</label><select id="foTypeInput"><option>FDP</option><option>Industrial Training</option><option>Consultancy</option><option>Research Collaboration</option></select></div>
+              <div class="field"><label>Duration</label><input type="text" id="foDurationInput" placeholder="1 week"></div>
+              <div class="field full"><label>Description</label><textarea id="foDescInput" placeholder="What this involves and who it's for"></textarea></div>
+            </div>
+            <button type="button" class="btn full" id="foSubmitBtn">Post opportunity</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function facultyOppBlock(o){
+  const interests = state.facultyInterests.filter(f=>f.opportunityId===o.id).map(f=>({f,acad:getAcademician(f.academicianId)}));
+  return `
+    <div class="panel" style="margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:8px;"><span class="type-pill">${o.type}</span><h3 style="font-size:16.5px;">${o.title}</h3></div>
+        <span style="font-size:12.5px;color:var(--slate);">${o.duration}</span>
+      </div>
+      <p style="font-size:13.5px;color:var(--slate);margin-bottom:12px;">${o.description}</p>
+      ${ interests.length ? interests.map(({f,acad})=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);">
+          <span style="font-size:13.5px;">${acad.name} <span style="color:var(--slate-light);">— ${acad.department}</span></span>
+          <span class="status-pill status-${f.status}">${f.status}</span>
+        </div>`).join('') : `<p style="color:var(--slate-light);font-size:13px;">No expressions of interest yet.</p>` }
+    </div>
+  `;
+}
+
+function emptyState(title,body){ return `<div class="empty-state"><h3>${title}</h3><p>${body}</p></div>`; }
+
+/* ============ INSTITUTION ============ */
+
+function InstitutionView(){
+  if(!state.institutionLoggedIn){ return InstitutionLoginScreen(); }
+  const totalStudents = state.students.length + 118;
+  const placed = state.placementRecords.length + 41;
+  const placementPct = Math.round((placed/totalStudents)*100);
+  const demand = {}; state.internships.forEach(i=>i.skills.forEach(sk=>demand[sk]=(demand[sk]||0)+1));
+  const demandRanked = Object.entries(demand).sort((a,b)=>b[1]-a[1]);
+  const maxDemand = demandRanked[0][1];
+  const totalEnrollments = state.enrollments.length + 63;
+  const totalFacultyEngagements = state.facultyInterests.length + 9;
+
+  return `
+    <div class="section-head">
+      <h2>Placement Cell</h2>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="hint">2026 batch, live view</span>
+        <button class="btn secondary small" data-logout-institution="1">Logout</button>
+      </div>
+    </div>
+    <div class="stat-strip">
+      <div class="stat-block"><div class="num">${totalStudents}</div><div class="lbl">students tracked</div></div>
+      <div class="stat-block"><div class="num">${placementPct}%</div><div class="lbl">placed this cycle</div></div>
+      <div class="stat-block"><div class="num">${state.companies.length}</div><div class="lbl">partner companies</div></div>
+      <div class="stat-block"><div class="num">${totalEnrollments}</div><div class="lbl">programme enrollments</div></div>
+      <div class="stat-block"><div class="num">${totalFacultyEngagements}</div><div class="lbl">faculty engagements</div></div>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="section-head"><h2>Recent placements</h2></div>
+        <div class="panel"><table class="data"><thead><tr><th>Student</th><th>Company</th><th>Role</th><th>Package</th></tr></thead>
+          <tbody>${state.placementRecords.map(r=>`<tr><td>${r.student}</td><td>${r.company}</td><td>${r.role}</td><td>${r.package}</td></tr>`).join('')}</tbody>
+        </table></div>
+        <div class="section-head"><h2>Registered student — skill snapshot</h2></div>
+        <div class="panel">
+          ${state.students.map(s=>`
+            <div style="margin-bottom:14px;">
+              <div style="font-weight:600;font-size:15px;">${s.name} <span style="font-weight:400;color:var(--slate);font-size:13px;">— ${s.course}</span></div>
+              <div class="tags" style="margin-top:6px;">${Object.keys(s.skills).map(sk=>`<span class="tag have">${sk}</span>`).join('')}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div class="section-head"><h2>Industry skill demand</h2></div>
+        <div class="panel"><div class="bar-chart">
+          ${demandRanked.map(([sk,count])=>`
+            <div class="bar-row"><div class="name">${sk}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${(count/maxDemand)*100}%;"></div></div><div class="val">${count}</div></div>
+          `).join('')}
+        </div></div>
+      </div>
+    </div>
+  `;
+}
+
+/* ============ HANDLERS ============ */
+
+function attachHandlers(){
+  const notificationBtn=document.getElementById('notificationBtn');
+  if(notificationBtn) notificationBtn.addEventListener('click',(e)=>{e.stopPropagation();state.notificationsOpen=!state.notificationsOpen;render();});
+  const markAllReadBtn=document.getElementById('markAllReadBtn');
+  if(markAllReadBtn) markAllReadBtn.addEventListener('click',()=>{state.notifications.forEach(n=>n.read=true);saveKey('notifications',state.notifications);state.notificationsOpen=true;render();});
+  document.querySelectorAll('[data-notification]').forEach(item=>item.addEventListener('click',()=>{const n=state.notifications.find(x=>x.id===item.dataset.notification);if(n){n.read=true;saveKey('notifications',state.notifications);render();}}));
+  document.querySelectorAll('.role-btn').forEach(btn=>btn.addEventListener('click', ()=>{ state.role=btn.dataset.role; state.notificationsOpen=false; render(); }));
+  document.querySelectorAll('[data-stab]').forEach(btn=>btn.addEventListener('click', ()=>{ state.studentTab=btn.dataset.stab; render(); }));
+  document.querySelectorAll('[data-itab]').forEach(btn=>btn.addEventListener('click', ()=>{ state.industryTab=btn.dataset.itab; render(); }));
+  document.querySelectorAll('[data-stab-link]').forEach(btn=>btn.addEventListener('click', ()=>{ state.studentTab=btn.dataset.stabLink; render(); }));
+
+  const studentLoginBtn = document.getElementById('studentLoginBtn');
+  if(studentLoginBtn){
+    studentLoginBtn.addEventListener('click', ()=>{
+      const name = document.getElementById('studentLoginInput').value.trim();
+      if(!name){ toast("Type your name to login"); return; }
+      if(!state.dataLoaded){ toast("Still loading saved profiles — try again in a moment"); return; }
+      let existing = state.students.find(s => s.name.toLowerCase() === name.toLowerCase());
+      if(!existing){
+        existing = { id: 'stu_'+Date.now(), name, course:"", college:"", skills:{}, targetRole: state.internships[0].title, achievements:[], resumeUrl:"" };
+        state.students.push(existing);
+        saveKey('students', state.students);
+      }
+      state.currentStudentId = existing.id;
+      state.studentLoginName = "";
+      toast("Logged in as " + existing.name); addNotification("Student login","You logged in successfully.");
+      render();
+    });
+  }
+
+  document.querySelectorAll('[data-logout-student]').forEach(btn=>btn.addEventListener('click', ()=>{
+    logoutStudent(); toast("Logged out"); render();
+  }));
+
+  const acadLoginBtn = document.getElementById('acadLoginBtn');
+  if(acadLoginBtn){
+    acadLoginBtn.addEventListener('click', ()=>{
+      state.currentAcademicianId = state.academicians[0].id;
+      toast("Logged in as " + state.academicians[0].name); addNotification("Academician login","You logged in successfully.");
+      render();
+    });
+  }
+  document.querySelectorAll('[data-logout-academician]').forEach(btn=>btn.addEventListener('click', ()=>{
+    state.currentAcademicianId = null; toast("Logged out"); render();
+  }));
+
+  const industryLoginBtn = document.getElementById('industryLoginBtn');
+  if(industryLoginBtn){
+    industryLoginBtn.addEventListener('click', ()=>{
+      const companyName = document.getElementById('industryLoginCompany').value.trim();
+      if(!companyName){ toast("Enter your company or industry name"); return; }
+      let company = state.companies.find(c => c.name.toLowerCase() === companyName.toLowerCase());
+      if(!company){
+        company = {id:"c"+Date.now(), name:companyName, sector:"Industry"};
+        state.companies.push(company);
+        saveKey('companies', state.companies);
+      }
+      state.activeCompanyId = company.id;
+      state.industryLoggedIn = true;
+      toast("Welcome, " + company.name); addNotification("Industry login","You logged in successfully.");
+      render();
+    });
+  }
+  document.querySelectorAll('[data-logout-industry]').forEach(btn=>btn.addEventListener('click', ()=>{
+    state.industryLoggedIn = false; toast("Logged out"); render();
+  }));
+
+  const institutionLoginBtn = document.getElementById('institutionLoginBtn');
+  if(institutionLoginBtn){
+    institutionLoginBtn.addEventListener('click', ()=>{
+      state.institutionLoggedIn = true;
+      toast("Logged in");
+      addNotification("Institution login","You logged in successfully.");
+      render();
+    });
+  }
+  document.querySelectorAll('[data-logout-institution]').forEach(btn=>btn.addEventListener('click', ()=>{
+    state.institutionLoggedIn = false; toast("Logged out"); render();
+  }));
+
+  const editBtn = document.querySelector('[data-edit-profile]');
+  if(editBtn) editBtn.addEventListener('click', ()=>{ state.editingProfile=true; render(); });
+  const cancelBtn = document.querySelector('[data-cancel-edit]');
+  if(cancelBtn) cancelBtn.addEventListener('click', ()=>{ state.editingProfile=false; render(); });
+
+  const createResumeBtn = document.getElementById('createResumeBtn');
+  if(createResumeBtn) createResumeBtn.addEventListener('click', ()=>{
+    state.resumeGenerated = true;
+    toast("Resume created");
+    addNotification("Resume generated","Your resume was generated from your live profile.");
+    render();
+  });
+  const regenerateResumeBtn = document.getElementById('regenerateResumeBtn');
+  if(regenerateResumeBtn) regenerateResumeBtn.addEventListener('click', ()=>{
+    toast("Resume refreshed with your latest details");
+    render();
+  });
+  const printResumeBtn = document.getElementById('printResumeBtn');
+  if(printResumeBtn) printResumeBtn.addEventListener('click', ()=>{
+    const student = getStudent(state.currentStudentId);
+    openResumePrintView(student);
+  });
+
+  const profileSkillPicker = document.getElementById('profileSkillPicker');
+  if(profileSkillPicker){
+    const student = getStudent(state.currentStudentId);
+    const levels = new Map(Object.entries(student.skills));
+    const levelsBox = document.getElementById('skillLevels');
+    function renderLevels(){
+      levelsBox.innerHTML = Array.from(levels.entries()).map(([sk,val])=>`
+        <div class="skillbar-row" style="grid-template-columns:150px 1fr 40px;"><div class="name">${sk}</div>
+          <input type="range" min="10" max="100" step="5" value="${val}" data-level-for="${sk}" style="width:100%;">
+          <div class="pct" data-level-display="${sk}">${val}%</div></div>
+      `).join('') || `<p style="color:var(--slate-light);font-size:13px;">Select skills above to set your level.</p>`;
+      levelsBox.querySelectorAll('[data-level-for]').forEach(slider=>{
+        slider.addEventListener('input', ()=>{
+          const sk=slider.dataset.levelFor; levels.set(sk, parseInt(slider.value,10));
+          levelsBox.querySelector(`[data-level-display="${sk}"]`).textContent = slider.value+'%';
+        });
+      });
+    }
+    renderLevels();
+    profileSkillPicker.querySelectorAll('.chip-opt').forEach(chip=>{
+      chip.addEventListener('click', ()=>{
+        const sk=chip.dataset.skill;
+        if(levels.has(sk)){ levels.delete(sk); chip.classList.remove('on'); } else { levels.set(sk,60); chip.classList.add('on'); }
+        renderLevels();
+      });
+    });
+    const saveBtn = document.getElementById('saveProfileBtn');
+    saveBtn.addEventListener('click', ()=>{
+      if(levels.size===0){ toast("Add at least one skill"); return; }
+      const nameVal = document.getElementById('profileNameInput').value.trim();
+      student.name = nameVal || student.name;
+      student.course = document.getElementById('profileCourseInput').value.trim();
+      student.college = document.getElementById('profileCollegeInput').value.trim();
+      student.targetRole = document.getElementById('profileTargetRoleSelect').value;
+      student.skills = Object.fromEntries(levels);
+      state.editingProfile=false; toast("Profile saved"); saveKey('students', state.students); render();
+    });
+  }
+
+  document.querySelectorAll('[data-apply]').forEach(btn=>btn.addEventListener('click', ()=>{
+    state.applications.push({ studentId: state.currentStudentId, internshipId: btn.dataset.apply, status:"Applied" });
+    toast("Application submitted"); addNotification("Application submitted","Your application was submitted successfully."); saveKey('applications', state.applications); render();
+  }));
+
+  document.querySelectorAll('[data-shortlist]').forEach(btn=>btn.addEventListener('click', ()=>{
+    const [studentId, internshipId] = btn.dataset.shortlist.split('|');
+    const app = applicationFor(studentId, internshipId);
+    if(app){ app.status="Shortlisted"; toast("Applicant shortlisted"); addNotification("Applicant shortlisted","An applicant was moved to the Shortlisted stage."); saveKey('applications', state.applications); render(); }
+  }));
+
+  document.querySelectorAll('[data-enroll]').forEach(btn=>btn.addEventListener('click', ()=>{
+    state.enrollments.push({ studentId: state.currentStudentId, programId: btn.dataset.enroll, status:"Enrolled" });
+    toast("Enrolled in programme"); addNotification("Programme enrollment","You enrolled in a learning programme."); saveKey('enrollments', state.enrollments); render();
+  }));
+  document.querySelectorAll('[data-complete-program]').forEach(btn=>btn.addEventListener('click', ()=>{
+    const e = enrollmentFor(state.currentStudentId, btn.dataset.completeProgram);
+    if(e){ e.status="Completed"; toast("Marked as completed — added to your portfolio"); addNotification("Programme completed","Your completed programme was added to your portfolio."); saveKey('enrollments', state.enrollments); render(); }
+  }));
+
+  document.querySelectorAll('[data-interest]').forEach(btn=>btn.addEventListener('click', ()=>{
+    state.facultyInterests.push({ academicianId: state.currentAcademicianId, opportunityId: btn.dataset.interest, status:"Interested" });
+    toast("Interest submitted"); addNotification("Interest submitted","Your faculty opportunity interest was recorded."); saveKey('facultyInterests', state.facultyInterests); render();
+  }));
+
+  // assessment
+  document.querySelectorAll('[data-qskill]').forEach(btn=>btn.addEventListener('click', ()=>{
+    state.assessmentAnswers[btn.dataset.qskill] = parseInt(btn.dataset.qscore,10); render();
+  }));
+  const submitAssessmentBtn = document.getElementById('submitAssessmentBtn');
+  if(submitAssessmentBtn) submitAssessmentBtn.addEventListener('click', ()=>{
+    const answered = ASSESSMENT_QUESTIONS.every(q => state.assessmentAnswers[q.skill] !== undefined);
+    if(!answered){ toast("Answer every question first"); return; }
+    const student = getStudent(state.currentStudentId);
+    ASSESSMENT_QUESTIONS.forEach(q => { student.skills[q.skill] = state.assessmentAnswers[q.skill]; });
+    toast("Assessment saved to your profile"); addNotification("Assessment saved","Your skill assessment was saved to your profile."); saveKey('students', state.students); render();
+  });
+
+  const picker = document.getElementById('companyPicker');
+  if(picker) picker.addEventListener('change', e=>{ state.activeCompanyId=e.target.value; render(); });
+
+  // post internship/job
+  const skillPicker = document.getElementById('skillPicker');
+  let selectedSkills = new Set();
+  if(skillPicker){
+    skillPicker.querySelectorAll('.chip-opt').forEach(chip=>chip.addEventListener('click', ()=>{
+      const sk=chip.dataset.skill;
+      if(selectedSkills.has(sk)){ selectedSkills.delete(sk); chip.classList.remove('on'); } else { selectedSkills.add(sk); chip.classList.add('on'); }
+    }));
+  }
+  const postSubmitBtn = document.getElementById('postSubmitBtn');
+  if(postSubmitBtn) postSubmitBtn.addEventListener('click', ()=>{
+    if(selectedSkills.size===0){ toast("Pick at least one required skill"); return; }
+    const title=document.getElementById('postTitleInput').value.trim();
+    const stipend=document.getElementById('postStipendInput').value.trim();
+    const duration=document.getElementById('postDurationInput').value.trim();
+    const type=document.getElementById('postTypeInput').value;
+    if(!title||!stipend||!duration){ toast("Fill in role title, stipend, and duration"); return; }
+    state.internships.unshift({ id:'i'+(state.internships.length+1)+'_'+Date.now(), companyId: state.activeCompanyId, title, type, stipend, duration, skills: Array.from(selectedSkills) });
+    toast("Opening posted"); addNotification("Opening posted","Your internship/job opening is now visible to students."); saveKey('internships', state.internships); render();
+  });
+
+  // post learning programme
+  const progSkillPicker = document.getElementById('progSkillPicker');
+  let progSelectedSkills = new Set();
+  if(progSkillPicker){
+    progSkillPicker.querySelectorAll('.chip-opt').forEach(chip=>chip.addEventListener('click', ()=>{
+      const sk=chip.dataset.skill;
+      if(progSelectedSkills.has(sk)){ progSelectedSkills.delete(sk); chip.classList.remove('on'); } else { progSelectedSkills.add(sk); chip.classList.add('on'); }
+    }));
+  }
+  const progSubmitBtn = document.getElementById('progSubmitBtn');
+  if(progSubmitBtn) progSubmitBtn.addEventListener('click', ()=>{
+    if(progSelectedSkills.size===0){ toast("Pick at least one skill covered"); return; }
+    const title=document.getElementById('progTitleInput').value.trim();
+    const duration=document.getElementById('progDurationInput').value.trim();
+    const type=document.getElementById('progTypeInput').value;
+    const mode=document.getElementById('progModeInput').value;
+    if(!title||!duration){ toast("Fill in title and duration"); return; }
+    state.learningPrograms.unshift({ id:'p'+(state.learningPrograms.length+1)+'_'+Date.now(), companyId: state.activeCompanyId, title, type, mode, duration, skills: Array.from(progSelectedSkills) });
+    toast("Programme posted"); addNotification("Learning programme posted","Your learning programme is now available to students."); saveKey('learningPrograms', state.learningPrograms); render();
+  });
+
+  // post faculty opportunity
+  const foSubmitBtn = document.getElementById('foSubmitBtn');
+  if(foSubmitBtn) foSubmitBtn.addEventListener('click', ()=>{
+    const title=document.getElementById('foTitleInput').value.trim();
+    const duration=document.getElementById('foDurationInput').value.trim();
+    const description=document.getElementById('foDescInput').value.trim();
+    const type=document.getElementById('foTypeInput').value;
+    if(!title||!duration||!description){ toast("Fill in all fields"); return; }
+    state.facultyOpportunities.unshift({ id:'f'+(state.facultyOpportunities.length+1)+'_'+Date.now(), companyId: state.activeCompanyId, title, type, duration, description });
+    toast("Opportunity posted"); addNotification("Faculty opportunity posted","Your faculty opportunity is now available."); saveKey('facultyOpportunities', state.facultyOpportunities); render();
+  });
+}
+
+render();
+setupRippleEffect();
+(async function boot(){ await loadSharedData(); state.dataLoaded = true; render(); })();
+</script>
+</body>
+</html>
